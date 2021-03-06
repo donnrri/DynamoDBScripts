@@ -1,0 +1,30 @@
+const {PassThrough} = require('stream')
+
+const curry = (fn, ...args) => (fn.length <= args.length) ? fn(...args) : (...more) => curry(fn, ...args, ...more);
+
+const upperCaseAttribute = curry((attributeRegex, str) => str.replace(attributeRegex, (a) => a.toUpperCase()))
+
+exports.sleep = (ms) =>new Promise(resolve => setTimeout(resolve, ms));
+
+exports.compose = (...fns) => fns.reduce((f, g) => (...args) => f(g(...args)))
+
+exports.asynccompose =(...functions) => input => functions.reduceRight((chain, func) => chain.then(func), Promise.resolve(input));
+
+exports.hasKey = curry((key, obj) =>  key in obj)
+
+exports.upperCaseTypeAttribute = upperCaseAttribute(/:{"\w":/g)
+
+exports.splitOnNewLine = (str) => str.split('\n')
+
+exports.concatStreams = (streamArray, streamCounter = streamArray.length) => streamArray
+  .reduce((mergedStream, stream) => {
+    // pipe each stream of the array into the merged stream
+    // prevent the automated 'end' event from firing
+
+    mergedStream = stream.pipe(mergedStream, { end: false });
+    // rewrite the 'end' event handler
+    // Every time one of the stream ends, the counter is decremented.
+    // Once the counter reaches 0, the mergedstream can emit its 'end' event.
+    stream.once('end', () => --streamCounter === 0 && mergedStream.emit('end'));
+    return mergedStream;
+  }, new PassThrough());

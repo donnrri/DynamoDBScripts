@@ -35,7 +35,7 @@ const dynamoClient = new AWS.DynamoDB({
       }
 });
 
-const tableName = process.env.BUCKET
+const tableName = process.env.DDB_TABLE
 
 const BATCH_LIMIT = 24
 

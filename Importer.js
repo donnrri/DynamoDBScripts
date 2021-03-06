@@ -35,7 +35,7 @@ const dynamoClient = new AWS.DynamoDB({
       }
 });
 
-const tableName = 'PRDglblConfiguration'
+const tableName = process.env.BUCKET
 
 const BATCH_LIMIT = 24
 
@@ -173,8 +173,8 @@ function loadData(params){
 }
 
 var s3ReadStream = S3.getObject({
-    Bucket: "gwt-pipeline-trans-copied-from-555983149870", 
-    Key: "PRDglblConfiguration/2021-01-07-08-15-00/4294d9e9-201b-4344-a86f-bc436b6403c0"
+    Bucket: process.env.BUCKET, 
+    Key: process.env.Key
  }).createReadStream();
 
   const chunks = Readable.from(s3ReadStream);
